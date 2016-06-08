@@ -7,25 +7,12 @@ import boto
 from boto.s3.key import Key
 
 
-def get_s3_file(s3_file, fileout, bucket='informatics-emr-mrjob'):
-    """
-    Downloads an S3 file
-
-    """
-    c = boto.connect_s3()
-    boto.s3.connect_to_region('eu-west-1')
-    bucket = c.get_bucket(bucket)
-    k = bucket.get_key(s3_file)
-    with open(fileout, "wb") as f:
-        k.get_file(f)
-    return fileout 
-
-
-def sequence(file_out, s3_files_in, tempvaluefile="/tmp/temp.nc"):
+def sequence(file_out, s3_files_in, tempvaluefile="/tmp/temp.nc", make_key):
     """
     String file path to write to
     A list of string file paths to read from. Each file in is encoded to a
     different k, v pair, with the key equal to the cube's metadata
+    make_key is a function with takes a cube and returns a uid string
     
     """
     keys_done = []
@@ -38,7 +25,7 @@ def sequence(file_out, s3_files_in, tempvaluefile="/tmp/temp.nc"):
         
         if (str(c.metadata) in keys_done):
             warnings.warn("Key for file "+f+" already present - overwriting")
-        key_writer.set(str(c.metadata))
+        key_writer.set(make_key(c))
         keys_done.append(str(c.metadata))
         
         value_writer = BytesWritable()
@@ -75,3 +62,17 @@ def desequence(seq_file, output_path, get_fname=lambda k, i: return "file"+str(i
             f.write(value.getBytes())
         i += 1
     reader.close()
+
+
+def get_s3_file(s3_file, fileout, bucket='informatics-emr-mrjob'):
+    """
+    Downloads an S3 file
+
+    """
+    c = boto.connect_s3()
+    boto.s3.connect_to_region('eu-west-1')
+    bucket = c.get_bucket(bucket)
+    k = bucket.get_key(s3_file)
+    with open(fileout, "wb") as f:
+        k.get_file(f)
+    return fileout
