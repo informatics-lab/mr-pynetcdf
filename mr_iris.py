@@ -1,10 +1,23 @@
 import datetime
+import iris
 from iris.coords import Cell
 
+
+class IrisProtocol(object):
+
+    def read(self, line):
+        k_str, v_str = line.split('\t', 1)
+        return k_str, iris.load_cube(v_str)
+
+    def write(self, key, value):
+        return '%s\t%s' % (key, json.dumps(value))
+
+
 def make_key(c):
-    info = {"name": d.standard_name,
-            "scalar_coords": {c.name(): c.cell(0).point for c in d.coords(dim_coords=False, dimensions=())}}
+    info = {"name": c.standard_name,
+            "scalar_coords": {crd.name(): crd.cell(0).point for crd in c.coords(dim_coords=False, dimensions=())}}
     return str(info)
+
 
 def make_cube(k):
     info = eval(k)

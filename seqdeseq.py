@@ -7,7 +7,7 @@ import boto
 from boto.s3.key import Key
 
 
-def sequence(file_out, s3_files_in, tempvaluefile="/tmp/temp.nc", make_key):
+def sequence(file_out, s3_files_in, make_key, tempvaluefile="/tmp/temp.nc"):
     """
     String file path to write to
     A list of string file paths to read from. Each file in is encoded to a
@@ -36,7 +36,7 @@ def sequence(file_out, s3_files_in, tempvaluefile="/tmp/temp.nc", make_key):
     writer.close()
 
 
-def desequence(seq_file, output_path, get_fname=lambda k, i: return "file"+str(i)+".nc"):
+def desequence(seq_file, output_path, get_fname=lambda k, i: "file"+str(i)+".nc"):
     """
     Takes a sequence file and writes out a separate NetCDF file
     for each value.
