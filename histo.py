@@ -12,6 +12,7 @@ import numpy as np
 class MRWordFreqCount(MRJob):
 
     def mapper(self, key, data):
+        c = mr_iris.make_cube(key)
         month = c.coord("time").cell(0).point.month
         if month not in [12, 1, 2] # djf
             d = iris.load_cube(data)
@@ -25,8 +26,8 @@ class MRWordFreqCount(MRJob):
                 keyout = "SON"
             yield (keyout, histo)
 
-    def reducer(self, season, histo):
-        yield (season, sum(counts))
+    def reducer(self, season, histos):
+        yield (season, reduce(lambda p, q: p+q, histos))
 
 
 if __name__ == '__main__':
