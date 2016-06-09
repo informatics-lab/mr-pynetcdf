@@ -9,7 +9,7 @@ import mr_iris
 import numpy as np
 
 
-class MRWordFreqCount(MRJob):
+class MRHisto(MRJob):
 
     def mapper(self, key, data):
         c = mr_iris.make_cube(key)
@@ -31,4 +31,4 @@ class MRWordFreqCount(MRJob):
 
 
 if __name__ == '__main__':
-     MRWordFreqCount.run()
+     MRHisto.run()
