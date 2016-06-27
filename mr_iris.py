@@ -28,7 +28,7 @@ def make_cube(k):
     return c
 
 
-def passes_contraint(k, con):
+def passes_constraint(k, con):
     cl = iris.cube.CubeList(make_cube(k))
     excl = cl.extract(con)
     return len(excel) == 1
